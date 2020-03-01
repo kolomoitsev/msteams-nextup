@@ -1,8 +1,9 @@
-# simon-blog-bot-v2
+# simon-blog-bot-v3
 
 Develop a Bot step by step, introducing more concepts as we go
 
 This is the Bot that is used in the Dialog Blog post #3.
+
 [URL](https://simonagren.github.io/bot-framework-series-3)
 
 

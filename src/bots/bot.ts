@@ -1,8 +1,13 @@
 import {
+  Activity,
   ActivityHandler,
+  ActivityTypes,
   BotState,
+  ChannelAccount,
   ConversationState,
+  Mention,
   StatePropertyAccessor,
+  TurnContext,
   UserState
 } from 'botbuilder';
 import { Dialog, DialogState } from 'botbuilder-dialogs';
@@ -26,13 +31,15 @@ export class SimonBot extends ActivityHandler {
   ) {
     super();
     if (!conversationState) {
-        throw new Error('[SimonBot]: Missing parameter. conversationState is required');
+      throw new Error(
+        '[SimonBot]: Missing parameter. conversationState is required'
+      );
     }
     if (!userState) {
-        throw new Error('[SimonBot]: Missing parameter. userState is required');
+      throw new Error('[SimonBot]: Missing parameter. userState is required');
     }
     if (!dialog) {
-        throw new Error('[SimonBot]: Missing parameter. dialog is required');
+      throw new Error('SimonBot]: Missing parameter. dialog is required');
     }
     this.conversationState = conversationState as ConversationState;
     this.userState = userState as UserState;
@@ -40,7 +47,6 @@ export class SimonBot extends ActivityHandler {
     this.dialogState = this.conversationState.createProperty<DialogState>('DialogState');
 
     this.onMessage(async (context, next) => {
-      
       // Run the Dialog with the new message Activity.
       await (this.dialog as MainDialog).run(context, this.dialogState);
 
@@ -49,20 +55,26 @@ export class SimonBot extends ActivityHandler {
     });
 
     this.onDialog(async (context, next) => {
-        // Save any state changes. The load happened during the execution of the Dialog.
-        await this.conversationState.saveChanges(context, false);
-        await this.userState.saveChanges(context, false);
+      // Save any state changes. The load happened during the execution of the Dialog.
+      await this.conversationState.saveChanges(context, false);
+      await this.userState.saveChanges(context, false);
 
-        // By calling next() you ensure that the next BotHandler is run.
-        await next();
+      // By calling next() you ensure that the next BotHandler is run.
+      await next();
     });
 
     this.onMembersAdded(async (context, next) => {
       const membersAdded = context.activity.membersAdded;
       for (const member of membersAdded) {
         if (member.id !== context.activity.recipient.id) {
-          const welcome = `Welcome to Simon Bot ${ member.name }. This Bot is a work in progress. At this time we have some dialogs working. Type anything to get started.`;
-          await context.sendActivity(welcome);
+          // If we are in Microsoft Teams
+          if (context.activity.channelId === 'msteams') {
+            // Send a message with an @Mention
+            await this._messageWithMention(context, member);
+          } else {
+            // Otherwise we send a normal echo
+            await context.sendActivity(`Welcome to Simon Bot ${member.name}. This Bot is a work in progress. At this time we have some dialogs working. Type anything to get started.`);
+          }
         }
       }
       // By calling next() you ensure that the next BotHandler is run.
@@ -74,10 +86,28 @@ export class SimonBot extends ActivityHandler {
    * Override the ActivityHandler.run() method to save state changes after the bot logic completes.
    */
   public async run(context): Promise<void> {
-      await super.run(context);
+    await super.run(context);
 
-      // Save any state changes. The load happened during the execution of the Dialog.
-      await this.conversationState.saveChanges(context, false);
-      await this.userState.saveChanges(context, false);
+    // Save any state changes. The load happened during the execution of the Dialog.
+    await this.conversationState.saveChanges(context, false);
+    await this.userState.saveChanges(context, false);
+  }
+
+  private async _messageWithMention(context: TurnContext, member: ChannelAccount): Promise<void> {
+    // Create mention object
+    const mention: Mention = {
+        mentioned: member,
+        text: `<at>${member.name}</at>`,
+        type: 'mention'
+    };
+
+    // Construct message to send
+    const message: Partial<Activity> = {
+        entities: [mention],
+        text: `Welcome to Simon Bot ${mention.text}. This Bot is a work in progress. At this time we have some dialogs working. Type anything to get started.`,
+        type: ActivityTypes.Message
+    };
+
+    await context.sendActivity(message);
   }
 }
