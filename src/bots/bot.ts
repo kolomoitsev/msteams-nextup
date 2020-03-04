@@ -31,9 +31,7 @@ export class SimonBot extends ActivityHandler {
   ) {
     super();
     if (!conversationState) {
-      throw new Error(
-        '[SimonBot]: Missing parameter. conversationState is required'
-      );
+      throw new Error('[SimonBot]: Missing parameter. conversationState is required');
     }
     if (!userState) {
       throw new Error('[SimonBot]: Missing parameter. userState is required');

@@ -4,7 +4,6 @@ import {
     ComponentDialog,
     ConfirmPrompt,
     DialogTurnResult,
-    PromptValidatorContext,
     TextPrompt,
     WaterfallDialog,
     WaterfallStepContext
@@ -15,7 +14,6 @@ import { SiteDetails } from './siteDetails';
 
 const TEXT_PROMPT = 'textPrompt';
 const CHOICE_PROMPT = 'choicePrompt';
-const TITLE_PROMPT = 'titlePrompt';
 const OWNER_RESOLVER_DIALOG = 'ownerResolverDialog';
 const CONFIRM_PROMPT = 'confirmPrompt';
 const WATERFALL_DIALOG = 'waterfallDialog';
@@ -25,7 +23,6 @@ export class SiteDialog extends ComponentDialog {
         super(id || 'siteDialog');
         this
             .addDialog(new ChoicePrompt(CHOICE_PROMPT))
-            .addDialog(new TextPrompt(TITLE_PROMPT, this.titlePromptValidator))
             .addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new OwnerResolverDialog(OWNER_RESOLVER_DIALOG))
             .addDialog(new ConfirmPrompt(CONFIRM_PROMPT))
@@ -40,13 +37,6 @@ export class SiteDialog extends ComponentDialog {
             ]));
         this.initialDialogId = WATERFALL_DIALOG;
     }    
-
-    /**
-     * validator for text lenght
-     */
-    private async titlePromptValidator(promptContext: PromptValidatorContext<string>): Promise<boolean> {
-        return promptContext.recognized.succeeded && promptContext.recognized.value.length > 0 && promptContext.recognized.value.length < 20;
-    }
 
     /**
      * If a site type has not been provided, prompt for one.
@@ -77,8 +67,7 @@ export class SiteDialog extends ComponentDialog {
         if (!siteDetails.title) {
 
             const promptText = 'Provide a title for your site';
-            const retryPromptText = 'The site title must contain at least one letter and be less than 20';
-            return await stepContext.prompt(TITLE_PROMPT, { prompt: promptText, retryPrompt: retryPromptText });
+            return await stepContext.prompt(TEXT_PROMPT, { prompt: promptText });
         } else {
             return await stepContext.next(siteDetails.title);
         }
