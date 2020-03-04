@@ -50,7 +50,7 @@ export class MainDialog extends ComponentDialog {
      */
     private async initialStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
         const siteDetails = new SiteDetails();
-        return await stepContext.beginDialog('siteDialog', siteDetails);
+        return await stepContext.beginDialog(SITE_DIALOG, siteDetails);
     }
 
     /**
