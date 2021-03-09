@@ -83,7 +83,7 @@ export class SimonBot extends ActivityHandler {
   /**
    * Override the ActivityHandler.run() method to save state changes after the bot logic completes.
    */
-  public async run(context): Promise<void> {
+  public async run(context: TurnContext): Promise<void> {
     await super.run(context);
 
     // Save any state changes. The load happened during the execution of the Dialog.

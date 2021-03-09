@@ -16,7 +16,7 @@ const SITE_DIALOG = 'siteDialog';
 const MAIN_WATERFALL_DIALOG = 'waterfallDialog';
 
 export class MainDialog extends ComponentDialog {
-    
+
     constructor(id: string) {
         super(id);
 
@@ -33,9 +33,12 @@ export class MainDialog extends ComponentDialog {
      * The run method handles the incoming activity (in the form of a DialogContext) and passes it through the dialog system.
      * If no dialog is active, it will start the default dialog.
      * @param {TurnContext} context
+     * @param accessor
      */
-    public async run(context: TurnContext, accessor: StatePropertyAccessor<DialogState>) {
+    public async run(context: TurnContext, accessor: StatePropertyAccessor<DialogState>): Promise<void> {
+
         const dialogSet = new DialogSet(accessor);
+
         dialogSet.add(this);
 
         const dialogContext = await dialogSet.createContext(context);
