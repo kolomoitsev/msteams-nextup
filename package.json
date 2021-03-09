@@ -1,12 +1,12 @@
 {
-    "name": "simon-blog-botv1",
+    "name": "msteams-nextup-bot",
     "version": "1.0.0",
-    "description": "Develop a Bot step by step, introducing more concepts as we go",
+    "description": "msteams-demo-app",
     "author": "Generated using Microsoft Bot Builder Yeoman generator v4.6.0",
     "license": "MIT",
     "main": "./lib/index.js",
     "scripts": {
-        "build": "tsc --build && node ./lib/index.js",
+        "build": "tsc --build",
         "lint": "tslint -c tslint.json 'src/**/*.ts'",
         "postinstall": "npm run build && node ./deploymentScripts/webConfigPrep.js",
         "start": "tsc --build && node ./lib/index.js",
