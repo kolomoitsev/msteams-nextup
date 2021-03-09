@@ -31,5 +31,5 @@ jobs:
       with:
         app-name: 'msteams-nextup'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_76f60e2b37264e308143ae8fdd3dd4dd }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_67526512812249e78e5e235d3c0cc5b3 }}
         package: .
