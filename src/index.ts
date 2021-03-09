@@ -11,7 +11,7 @@ import { BotFrameworkAdapter, ConversationState, MemoryStorage, UserState } from
 
 // This bot's main dialog.
 import { SimonBot } from './bots/bot';
-import { MainDialog } from './dialogs/mainDialog';
+import { MainDialog } from './dialogs/MainDialog';
 
 const ENV_FILE = path.join(__dirname, '..', '.env');
 config({ path: ENV_FILE });

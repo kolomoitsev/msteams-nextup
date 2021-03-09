@@ -11,7 +11,7 @@ import {
   UserState
 } from 'botbuilder';
 import { Dialog, DialogState } from 'botbuilder-dialogs';
-import { MainDialog } from '../dialogs/mainDialog';
+import { MainDialog } from '../dialogs/MainDialog';
 
 export class SimonBot extends ActivityHandler {
   private conversationState: BotState;
@@ -71,7 +71,7 @@ export class SimonBot extends ActivityHandler {
             await this._messageWithMention(context, member);
           } else {
             // Otherwise we send a normal echo
-            await context.sendActivity(`Welcome to Simon Bot ${member.name}. This Bot is a work in progress. At this time we have some dialogs working. Type anything to get started.`);
+            await context.sendActivity(`Welcome to MSteams Bot ${member.name}. Type anything to get started.`);
           }
         }
       }

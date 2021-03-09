@@ -9,6 +9,8 @@ import {
     WaterfallStepContext
 } from 'botbuilder-dialogs';
 
+const { MessageFactory, CardFactory, HeroCard } = require('botbuilder');
+
 import { OwnerResolverDialog } from './ownerResolverDialog';
 import { SiteDetails } from './siteDetails';
 
@@ -29,14 +31,14 @@ export class SiteDialog extends ComponentDialog {
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
                 this.siteTypeStep.bind(this),
                 this.titleStep.bind(this),
-                this.descriptionStep.bind(this),
-                this.ownerStep.bind(this),
-                this.aliasStep.bind(this),
-                this.confirmStep.bind(this),
+                // this.descriptionStep.bind(this),
+                // this.ownerStep.bind(this),
+                // this.aliasStep.bind(this),
+                // this.confirmStep.bind(this),
                 this.finalStep.bind(this)
             ]));
         this.initialDialogId = WATERFALL_DIALOG;
-    }    
+    }
 
     /**
      * If a site type has not been provided, prompt for one.
@@ -47,30 +49,52 @@ export class SiteDialog extends ComponentDialog {
         if (!siteDetails.siteType) {
 
             return await stepContext.prompt(CHOICE_PROMPT, {
-                choices: ChoiceFactory.toChoices(['Team Site', 'Communication Site']),
-                prompt: 'Select site type.'
+                choices: ChoiceFactory.toChoices(['Sign in with JIRA']),
+                prompt: 'Authenticate with Jira.'
             });
 
         } else {
             return await stepContext.next(siteDetails.siteType);
         }
     }
-    
+
     /**
      * If a title has not been provided, prompt for one.
      */
     private async titleStep(stepContext: WaterfallStepContext): Promise<DialogTurnResult> {
         const siteDetails = stepContext.options as SiteDetails;
 
+        if (stepContext.result.value === 'Sign in with JIRA') {
+
+            const card = CardFactory.heroCard(
+                'Sign in with Jira',
+                CardFactory.images(['https://miro.medium.com/max/1014/1*3BQZO_fG-hCqJUDArCVGhw.jpeg']),
+                CardFactory.actions([
+                    {
+                        type: 'openUrl',
+                        // tslint:disable-next-line:object-literal-sort-keys
+                        title: 'Sign in with JIRA',
+                        value: 'https://37c755539a77.ngrok.io'
+                    }
+                ])
+            );
+            const message = MessageFactory.attachment(card);
+            await stepContext.context.sendActivity(message);
+
+        }
+
         siteDetails.siteType = stepContext.result.value;
 
-        if (!siteDetails.title) {
 
-            const promptText = 'Provide a title for your site';
-            return await stepContext.prompt(TEXT_PROMPT, { prompt: promptText });
-        } else {
-            return await stepContext.next(siteDetails.title);
-        }
+        // if (!siteDetails.title) {
+        //
+        //     const promptText = 'Provide a title for your site';
+        //     return await stepContext.prompt(TEXT_PROMPT, { prompt: promptText });
+        // } else {
+        //     return await stepContext.next(siteDetails.title);
+        // }
+
+        return await stepContext.endDialog();
     }
 
     /**
@@ -83,7 +107,7 @@ export class SiteDialog extends ComponentDialog {
         siteDetails.title = stepContext.result;
         if (!siteDetails.description) {
             const text = 'Provide a description for your site';
-            return await stepContext.prompt(TEXT_PROMPT, { prompt: text });    
+            return await stepContext.prompt(TEXT_PROMPT, { prompt: text });
         } else {
             return await stepContext.next(siteDetails.description);
         }
@@ -113,15 +137,15 @@ export class SiteDialog extends ComponentDialog {
 
         // Capture the results of the previous step
         siteDetails.owner = stepContext.result;
-        
+
         // Don't ask for alias if a communication site
         if (siteDetails.siteType === 'Communication Site') {
-            
+
             return await stepContext.next();
-        
+
         // Otherwise ask for an alias
         } else {
-            
+
             if (!siteDetails.alias) {
                 const text = 'Provide an alias for your site';
                 return await stepContext.prompt(TEXT_PROMPT, { prompt: text });
@@ -139,7 +163,7 @@ export class SiteDialog extends ComponentDialog {
 
         // Capture the results of the previous step
         siteDetails.alias = stepContext.result;
-        
+
         const msg = `A summary of your request:\n 
         Title: ${ siteDetails.title} \n\n
         Owner: ${ siteDetails.owner} \n\n
